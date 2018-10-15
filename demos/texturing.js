@@ -169,7 +169,8 @@ let fragmentShader = `
     #version 300 es
     precision highp float;
     
-    uniform sampler2D tex;    
+    uniform sampler2D tex;
+    uniform float time;    
     
     in vec2 v_uv;
     
@@ -177,7 +178,7 @@ let fragmentShader = `
     
     void main()
     {        
-        outColor = texture(tex, v_uv);
+        outColor = texture(tex, (v_uv - 0.5) * 2.0) + texture(tex, (v_uv - 0.5) *2.0* tan(time * 2.5));
     }
 `;
 
@@ -195,7 +196,7 @@ let vertexShader = `
     
     void main()
     {
-        gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);           
+        gl_Position = modelViewProjectionMatrix * vec4(position, 0.5)*5.0;           
         v_uv = uv;
     }
 `;
@@ -257,7 +258,7 @@ let rotateYMatrix = mat4.create();
 let skyboxViewProjectionInverse = mat4.create();
 
 
-loadImages(["images/texture.jpg", "images/cubemap.jpg"], function (images) {
+loadImages(["images/texture2.jpg", "images/cubemap2.jpg"], function (images) {
     let drawCall = app.createDrawCall(program, vertexArray)
         .texture("tex", app.createTexture2D(images[0], images[0].width, images[0].height, {flipY: true, magFilter: PicoGL.NEAREST, wrapT: PicoGL.REPEAT}));
 
@@ -275,8 +276,8 @@ loadImages(["images/texture.jpg", "images/cubemap.jpg"], function (images) {
         mat4.lookAt(viewMatrix, camPos, vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0));
         mat4.multiply(viewProjMatrix, projMatrix, viewMatrix);
 
-        mat4.fromXRotation(rotateXMatrix, time * 0.1136 - Math.PI / 2);
-        mat4.fromZRotation(rotateYMatrix, time * 0.2235);
+        mat4.fromXRotation(rotateXMatrix, time * 1.0 - Math.PI / 2);
+        mat4.fromZRotation(rotateYMatrix, time * 1.0);
         mat4.multiply(modelMatrix, rotateXMatrix, rotateYMatrix);
 
         mat4.multiply(modelViewMatrix, viewMatrix, modelMatrix);
