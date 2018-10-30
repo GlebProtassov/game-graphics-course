@@ -178,7 +178,7 @@ let fragmentShader = `
     
     void main()
     {        
-        outColor = texture(tex, (v_uv - 0.5) * 2.0) + texture(tex, (v_uv - 0.5) *2.0* tan(time * 2.5));
+        outColor = texture(tex, (v_uv - 0.5) * 2.0) + texture(tex, (v_uv - 0.5) *2.0* sin(time * 2.5));
     }
 `;
 
@@ -258,7 +258,7 @@ let rotateYMatrix = mat4.create();
 let skyboxViewProjectionInverse = mat4.create();
 
 
-loadImages(["images/texture2.jpg", "images/cubemap2.jpg"], function (images) {
+loadImages(["images/texture2.jpg", "images/cubemap.jpg"], function (images) {
     let drawCall = app.createDrawCall(program, vertexArray)
         .texture("tex", app.createTexture2D(images[0], images[0].width, images[0].height, {flipY: true, magFilter: PicoGL.NEAREST, wrapT: PicoGL.REPEAT}));
 
@@ -297,6 +297,7 @@ loadImages(["images/texture2.jpg", "images/cubemap2.jpg"], function (images) {
 
         app.depthTest();
         drawCall.uniform("modelViewProjectionMatrix", modelViewProjectionMatrix);
+        drawCall.uniform("time",time);
         drawCall.draw();
 
         requestAnimationFrame(draw);
